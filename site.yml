@@ -1,0 +1,7 @@
+---
+- name: Déployer Apache2 et PHP 8.1
+  hosts: webservers
+  become: yes
+  roles:
+    - apache
+    - php

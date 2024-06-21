@@ -1,0 +1,19 @@
+---
+- name: Mettre à jour les paquets APT
+  apt:
+    update_cache: yes
+
+- name: Installer Apache2
+  apt:
+    name: apache2
+    state: present
+
+- name: Activer le module Apache2 pour PHP 8.1
+  apache2_module:
+    state: present
+    name: php8.1
+
+- name: Redémarrer Apache2
+  service:
+    name: apache2
+    state: restarted
