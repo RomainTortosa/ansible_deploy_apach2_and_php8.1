@@ -1,10 +1,25 @@
 ---
-- name: Ajouter le repository pour PHP 8.1
-  apt_repository:
-    repo: ppa:ondrej/php
+- name: Installer les dépendances nécessaires
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - apt-transport-https
+    - lsb-release
+    - ca-certificates
+    - gnupg
+
+- name: Ajouter la clé GPG pour le dépôt sury.org
+  apt_key:
+    url: https://packages.sury.org/php/apt.gpg
     state: present
 
-- name: Mettre à jour les paquets APT après ajout du repository
+- name: Ajouter le dépôt sury.org pour PHP
+  apt_repository:
+    repo: "deb https://packages.sury.org/php/ {{ ansible_distribution_release }} main"
+    state: present
+
+- name: Mettre à jour les paquets APT
   apt:
     update_cache: yes
 
@@ -19,7 +34,6 @@
     - php8.1-fpm
     - php8.1-mysql
     - php8.1-curl
-    - php8.1-json
     - php8.1-cgi
     - php8.1-mbstring
     - php8.1-xml

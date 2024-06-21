@@ -8,10 +8,6 @@
     name: apache2
     state: present
 
-- name: Activer le module Apache2 pour PHP 8.1
-  apache2_module:
-    state: present
-    name: php8.1
 
 - name: Redémarrer Apache2
   service:
