@@ -1,7 +1,12 @@
 ---
-- name: Déployer Apache2 et PHP 8.1
+- name: Déployer Apache2, PHP 8.1 et MariaDB
   hosts: webservers
   become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3  # Assurez-vous que c'est le bon chemin vers l'interpréteur Python 3
   roles:
     - apache
     - php
+    - mariadb
+  vars:
+    mysql_root_password: "root_password"  # Mot de passe root pour MariaDB

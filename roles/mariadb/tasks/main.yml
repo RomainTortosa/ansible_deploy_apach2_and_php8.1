@@ -1,0 +1,65 @@
+---
+- name: Installer MariaDB
+  apt:
+    name: mariadb-server
+    state: present
+
+- name: Installer le module PyMySQL pour Python 3
+  apt:
+    name: python3-pymysql
+    state: present
+
+- name: Assurer que le service MariaDB est démarré et activé
+  systemd:
+    name: mysql
+    state: started
+    enabled: yes
+
+- name: Créer un fichier .my.cnf temporaire pour MariaDB
+  copy:
+    dest: /root/.my.cnf
+    content: |
+      [client]
+      user=root
+      password="{{ mysql_root_password }}"
+  no_log: true
+
+- name: Définir le mot de passe root initial pour MariaDB avec l'authentification socket
+  shell: |
+    mysql -u root <<EOF
+    ALTER USER 'root'@'localhost' IDENTIFIED VIA mysql_native_password USING PASSWORD('{{ mysql_root_password }}');
+    FLUSH PRIVILEGES;
+    EOF
+  args:
+    executable: /bin/bash
+
+- name: Supprimer les utilisateurs anonymes
+  mysql_user:
+    name: ''
+    host_all: true
+    state: absent
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+
+- name: Supprimer la base de données de test
+  mysql_db:
+    name: test
+    state: absent
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+
+- name: Mettre à jour les permissions de l'utilisateur root
+  mysql_user:
+    name: root
+    host: localhost
+    password: "{{ mysql_root_password }}"
+    priv: '*.*:ALL,GRANT'
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+
+- name: Supprimer le fichier .my.cnf temporaire
+  file:
+    path: /root/.my.cnf
+    state: absent
+  ignore_errors: true
