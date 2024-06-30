@@ -8,5 +8,10 @@
     - apache
     - php
     - mariadb
+    - wordpress
   vars:
     mysql_root_password: "root_password"  # Mot de passe root pour MariaDB
+    db_name: "wordpress"
+    db_user: "wordpressuser"
+    db_password: "wordpresspassword"
+    db_host: "localhost"
